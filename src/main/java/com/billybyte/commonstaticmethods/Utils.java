@@ -332,6 +332,17 @@ public class Utils {
 		return stream;
 	}
 
+	public static void makeDirectory(String path){
+		File file = new File(path);
+		if (!file.exists()) {
+			if (file.mkdir()) {
+				return;
+			} else {
+				throw IllState(Utils.class,"directory already exists!");
+			}
+		}
+
+	}
 
 	
 	public static String getPathOfResource(Class<?> clazz,String fileName){
@@ -1425,7 +1436,9 @@ public class Utils {
 				c.get(Calendar.MINUTE)+c.get(Calendar.SECOND)+c.get(Calendar.MILLISECOND)+".zip";
 		try {
 			// get the file as inputstream
-			InputStream in = getInputStreamFromHttpFtp(zipfilePath);
+			InputStream in = zipfilePath.contains("http") || zipfilePath.contains("ftp") ?
+					getInputStreamFromHttpFtp(zipfilePath)  :
+						new FileInputStream(zipfilePath);
 	        // create a full temp zipfile name
 			String tempZipFilePath = addSlash(unZipFolderPath)+tempZipFileName;
 			// copy the zip file to the temp file

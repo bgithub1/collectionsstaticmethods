@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Scanner;
+
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -412,6 +412,7 @@ public class Utils {
 
 			ChannelSftp sftpChannel = (ChannelSftp) channel;
 			try {
+				@SuppressWarnings("unchecked")
 				Vector<LsEntry> lsEntries = sftpChannel.ls(folderPath);
 				List<LsEntry> ret = new ArrayList<ChannelSftp.LsEntry>();
 				for(LsEntry lsEntry:lsEntries){
@@ -538,6 +539,26 @@ public class Utils {
 		return null;
 		
 	}
+	
+	
+	public static CSVReader getCSVReaderWithError(String filename) throws IOException  {
+		Reader bufferedReader=null;
+		CSVReader reader;
+
+		if(filename.substring(0,3).compareTo("ftp")==0 || filename.substring(0,4).compareTo("http")==0 ){
+			URL url = 
+				    new URL(filename);
+				URLConnection con = url.openConnection();
+				bufferedReader = 
+					new BufferedReader(new InputStreamReader(con.getInputStream()));
+		}else {
+			bufferedReader = new FileReader(filename);
+		}
+		reader = new CSVReader(bufferedReader);
+		return reader;
+		
+	}
+	
 	
 	
 	
@@ -831,12 +852,17 @@ public class Utils {
 				while((nextline = reader.readNext())!=null){
 					retList.add(nextline[0]);
 				}
-				return retList;
 			} catch (IOException e) {
-			
 				e.printStackTrace();
 				return null;
 			}
+		try {
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return retList;
 	}
 
 
@@ -853,6 +879,7 @@ public class Utils {
 //
 //	}
 	
+	@SuppressWarnings("deprecation")
 	public static List<String> readHttp(String urlString){
 		
 		URL url=null;
@@ -916,6 +943,7 @@ public class Utils {
 	
 	public static <E>List<E> flattenMap(Map<?, ?> m,Class<E> rootClass){
 		List<E> ret = new ArrayList<E>();
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		List<?> oList = new ArrayList(m.values());
 		if(oList.size()<1)return null;
 		Object o = oList.get(0);
@@ -926,6 +954,7 @@ public class Utils {
 		}else{
 			for(Object v:m.values()){
 				if(rootClass.isAssignableFrom(v.getClass())){
+					@SuppressWarnings("unchecked")
 					E e = (E)v;
 					ret.add(e);
 				}
@@ -952,7 +981,7 @@ public class Utils {
 	 * @param mapToUpdate
 	 * @param keys
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void treeMapNDeepAdd(Object valueToUpdate,@SuppressWarnings("rawtypes") TreeMap mapToUpdate,Object ... keys){
 		@SuppressWarnings("rawtypes")
 		TreeMap currMap = mapToUpdate;
@@ -989,7 +1018,7 @@ public class Utils {
 		return getXmlData(returnClass,null,path);
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	/**
 	 * This will process annotations in the class specified by
 	 *   classOfPackage.
@@ -1156,6 +1185,7 @@ public class Utils {
 		return ret;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T getSerializedData(Class<T> classOfResult,String serialFilePath){
 		T data =null;
 		try {
@@ -1269,6 +1299,7 @@ public class Utils {
 		ApplicationContext context = new  FileSystemXmlApplicationContext(beansXmlpath);
 
 		Object o = context.getBean(beanName);
+		
 		return classOfReturn.cast(o);
 	}
 

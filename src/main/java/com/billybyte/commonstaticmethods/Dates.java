@@ -206,7 +206,7 @@ public class Dates {
 		return earliestDateYYYYMMDD;
 	}
 	/**
-	 * Subtract b from a
+	 * Subtract a from b
 	 * @param a
 	 * @param b
 	 * @param units
@@ -230,6 +230,15 @@ public class Dates {
 		Calendar beg = getCalenderFromYYYYMMDDLong(begYYMMDD);
 		Calendar end = getCalenderFromYYYYMMDDLong(endYYMMDD);
 		return getDifference(beg, end, units);
+	}
+	
+	public static long getDaysInMonth(int year, int month){
+		Calendar c = Calendar.getInstance();
+		Calendar d = Calendar.getInstance();
+		c.set(year,month-1,1,0,0,1);
+		d.set(year,month-0,1,1,0,1);
+		long diff = TimeUnit.DAYS.convert(d.getTimeInMillis()- c.getTimeInMillis(), TimeUnit.MILLISECONDS);
+		return diff;
 	}
 
 	

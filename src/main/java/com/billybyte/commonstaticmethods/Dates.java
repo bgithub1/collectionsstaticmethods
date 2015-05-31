@@ -15,6 +15,7 @@ import org.joda.time.Days;
 
 
 public class Dates {
+	private static final String[] MONTH_CODES_REGULAR = {"F","G","H","J","K","M","N","Q","U","V","X","Z"};
 	private static 		DecimalFormat dfMonth = new DecimalFormat("00");
 	private static 		DecimalFormat dfYear = new DecimalFormat("0000");
 	
@@ -336,6 +337,19 @@ public class Dates {
 		return ret;
 	}
 
+	/**
+	 * returns contract in form MYY when supplied in form YYYYMM (e.g. 201301 -> F13)
+	 * @param YYYYMM
+	 * @return
+	 */
+	public static String getMYYfromYYYYMM(String YYYYMM){
+		Integer month = Integer.parseInt(YYYYMM.substring(4));
+		String year = YYYYMM.substring(2, 4);
+		return MONTH_CODES_REGULAR[month-1]+year;
+	}
+	
+	
+	
 	public static Long getYyyyMmDd(int year,int month,int day){
 		DecimalFormat dfYr = new DecimalFormat("0000");
 		DecimalFormat dfMonDay = new DecimalFormat("00");
